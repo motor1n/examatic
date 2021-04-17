@@ -5,13 +5,13 @@ developed on flask
 """
 
 import datetime
-from flask import Flask, render_template, request, make_response, session, jsonify, url_for
+from flask import Flask, render_template, request, make_response, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from sqlalchemy import or_
-from werkzeug.exceptions import abort
+# from sqlalchemy import or_
+# from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 from data import db_session
-from data.question import Question, QuestionForm
+from data.question import Question
 from data.users import User
 from data.register import RegisterForm
 from data.login import LoginForm
@@ -98,7 +98,7 @@ def login():
 @app.route('/ticket')
 def ticket():
     """Экзаменационный билет"""
-    db = db_session.create_session()
+    # db = db_session.create_session()
     # Фильтруем вопросы - исключаем черновики (Question.is_published == 0):
     # db_questions = db.query(Question).filter(Question.is_published == 1)
     ticket_number = 14
@@ -216,7 +216,7 @@ def logout():
 
 
 @app.errorhandler(404)
-def not_found(error):
+def not_found():
     """Обработка ошибки 404"""
     return make_response(jsonify({'error': 'Not found'}), 404)
 
