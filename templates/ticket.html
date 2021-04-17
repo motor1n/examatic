@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+      <div class="placeholder">
+          <div class="parallax-window" data-parallax="scroll" data-image-src="static/img/python-logo.jpg">
+              <div class="tm-header">
+                  <div class="row tm-header-inner">
+                      <div class="col-md-6 col-12">
+                          <img src="static/img/simple-logo.png" alt="Logo" class="tm-site-logo" onclick="window.open('/index');">
+                          <div class="tm-site-text-box">
+                              <h1 class="tm-site-title">Экзамен</h1>
+                              <h6 class="tm-site-description">Программирование на языке Python</h6>
+                          </div>
+                      </div>
+                      <div class="col-md-6 col-12 tm-site-text-box">
+                          <h1 class="tm-site-title" align="right">Приступайте!</h1>
+                          <h6 class="tm-site-description" align="right">Желаем удачи:)</h6>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+</div>
+
+<main>
+    <header class="row tm-welcome-section">
+        <h2 class="col-12 text-center tm-section-title">{{surname}} {{name}} {{middlename}}</h2>
+        <p class="col-12 text-center">Билет № {{ticket}}.</p>
+    </header>
+
+    <div class="tm-paging-links">
+        <nav>
+            <ul>
+                <li class="tm-paging-item"><a href="#" class="tm-paging-link active">Вопрос №1</a></li>
+                <li class="tm-paging-item"><a href="#" class="tm-paging-link">Вопрос №2</a></li>
+                <li class="tm-paging-item"><a href="#" class="tm-paging-link">Практика</a></li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+{% endblock %}

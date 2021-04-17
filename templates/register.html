@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+      <div class="placeholder">
+          <div class="parallax-window" data-parallax="scroll" data-image-src="static/img/python-logo.jpg">
+              <div class="tm-header">
+                  <div class="row tm-header-inner">
+                      <div class="col-md-6 col-12">
+                          <img src="static/img/simple-logo.png" alt="Logo" class="tm-site-logo" onclick="window.open('/index');">
+                          <div class="tm-site-text-box">
+                              <h1 class="tm-site-title">Экзамен</h1>
+                              <h6 class="tm-site-description">Программирование на языке Python</h6>
+                          </div>
+                      </div>
+                      <nav class="col-md-6 col-12 tm-nav">
+                          <ul class="tm-nav-ul">
+                              <li class="tm-nav-li"><a href="/index" class="tm-nav-link">Вопросы</a></li>
+                              <li class="tm-nav-li"><a href="/register" class="tm-nav-link active">Регистрация</a></li>
+                              <li class="tm-nav-li"><a href="/login" class="tm-nav-link">Экзамен</a></li>
+                          </ul>
+                      </nav>
+                  </div>
+              </div>
+          </div>
+      </div>
+</div>
+
+<main>
+    <header class="row tm-welcome-section">
+        <h2 class="col-12 text-center tm-section-title">Регистрация на экзамен</h2>
+        <p class="col-12 text-center">Инструкция о порядке регистрации.</p>
+    </header>
+</main>
+
+<form action="" method="post" style="padding-left: 100px; padding-right: 100px;">
+    <div class="container">
+        {{form.hidden_tag()}}
+        {{form.csrf_token}}
+        <p>
+            {{form.surname.label}}<br>
+            {{form.surname(class="form-control")}}<br>
+            {% for error in form.surname.errors %}
+                <p class="alert alert-danger" role="alert">{{error}}
+            {% endfor %}
+        <p>
+            {{form.name.label}}<br>
+            {{form.name(class="form-control")}}<br>
+            {% for error in form.name.errors %}
+                <p class="alert alert-danger" role="alert">{{error}}
+            {% endfor %}
+        <p>
+            {{form.middlename.label}}<br>
+            {{form.middlename(class="form-control")}}<br>
+            {% for error in form.middlename.errors %}
+                <p class="alert alert-danger" role="alert">{{error}}
+            {% endfor %}
+        <p>
+            {{form.email.label}}<br>
+            {{form.email(class="form-control", type="email")}}<br>
+            {% for error in form.email.errors %}
+                <p class="alert alert-danger" role="alert">{{error}}
+            {% endfor %}
+        <p>
+            {{form.password.label}}<br>
+            {{form.password(class="form-control", type="password")}}<br>
+            {% for error in form.password.errors %}
+                <p class="alert alert-danger" role="alert">{{error}}
+            {% endfor %}
+        <p>
+            {{form.password_again.label}}<br>
+            {{form.password_again(class="form-control", type="password")}}<br>
+            {% for error in form.password_again.errors %}
+                <p class="alert alert-danger" role="alert">{{error}}
+            {% endfor %}
+        <p align="center">
+            {{form.submit(type="submit", class="iw-modal-btn")}}
+        <!-- Модальное окно -->
+        <div id="iw-modal" class="iw-modal">
+            <div class="iw-modal-wrapper">
+                <div class="iw-CSS-modal-inner">
+                    <div class="iw-modal-header">
+                        <h3 class="iw-modal-title">Внимание!</h3>
+                        <a href="#close" title="Закрыть" class="iw-close">×</a>
+                    </div>
+                    <div class="iw-modal-text">
+                        <p>Такой пользователь уже есть</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+      <div class="placeholder">
+          <div class="parallax-window" data-parallax="scroll" data-image-src="static/img/python-logo.jpg">
+              <div class="tm-header">
+                  <div class="row tm-header-inner">
+                      <div class="col-md-6 col-12">
+                          <img src="static/img/simple-logo.png" alt="Logo" class="tm-site-logo">
+                          <div class="tm-site-text-box">
+                              <h1 class="tm-site-title">Экзамен</h1>
+                              <h6 class="tm-site-description">Программирование на языке Python</h6>
+                          </div>
+                      </div>
+                      <nav class="col-md-6 col-12 tm-nav">
+                          <ul class="tm-nav-ul">
+                              <li class="tm-nav-li"><a href="/index" class="tm-nav-link active">Вопросы</a></li>
+                              <li class="tm-nav-li"><a href="/register" class="tm-nav-link">Регистрация</a></li>
+                              <li class="tm-nav-li"><a href="/login" class="tm-nav-link">Экзамен</a></li>
+                          </ul>
+                      </nav>
+                  </div>
+              </div>
+          </div>
+      </div>
+</div>
+
+<main>
+    <header class="row tm-welcome-section">
+        <h2 class="col-12 text-center tm-section-title">Вопросы к экзамену</h2>
+        <p class="col-12 text-center">Информация о вопросах.</p>
+    </header>
+</main>
+
+<ol  style="padding-left: 100px">
+    {% for item in questions %}
+        <li>{{item.content}}</li>
+    {% endfor %}
+</ol>
+
+{% endblock %}

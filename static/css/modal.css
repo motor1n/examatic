@@ -1,0 +1,108 @@
+.content-block {
+	padding-top:30px;
+}
+
+.back, .iw-modal-btn {
+	background:#013C74;
+	color:#fff;
+	text-align:center;
+	display:inline-block;
+	padding:10px 20px;
+	text-decoration:none;
+	font-size:17px;
+	margin-top:30px;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	
+}
+
+.back:hover, .iw-modal-btn:hover {
+	 -webkit-transform: scale(1.1);
+	 -moz-transform: scale(1.1);
+	 -o-transform: scale(1.1);
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	background:#439DE0;
+}
+
+/********Модальное окно************/
+  
+/*CSS-свойства для заднего фона модального окна*/
+.iw-modal {
+	opacity: 0; /*изначально этот блок должен быть прозрачным*/ 
+	background: rgba(0,0,0,0.7); /*задаём цвет фона*/
+	pointer-events: none; /*делаем чтобы по элементу нельзя было кликнуть когда он прозрачный*/
+ 	position: fixed; 
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9999;
+	transition: all 0.5s ease;
+    margin: 0;
+    padding: 0;
+}
+
+.iw-modal:target {
+    opacity: 1; /*при клике окно становится видимым*/
+	pointer-events: auto; /*теперь по окну можно кликать мышкой*/
+    overflow-y: auto; /*прокрутка по вертикли страницы*/
+}
+
+.iw-modal-wrapper {
+	margin:auto; /*выравниваем окно по центру по горизонтали*/
+	margin-top:25vh; /*отступ сверху можно задавать в px, % или vh*/
+}
+
+/*CSS-свойства для блока, содержащего контент модального окна */ 
+.iw-CSS-modal-inner {
+    position: relative;
+    background: #fff; /*цвет фона*/
+    border: 1px solid #ccc; /*цвет и толщина рамки*/
+    border-radius: 0px; /*радиус скругления углов*/
+
+}
+
+/*CSS-свойства заголовка модального окна */
+.iw-modal-header {
+    padding: 15px;/*внутренний отступ*/
+    background:#f1f1f1;/*цвет фона*/
+	position:relative;
+}
+.iw-modal-title {
+	font-size: 18px; /*размер шрифта*/
+	color:#555; /*цвет шрифта*/
+	font-weight:bold; /*жирность шрифта*/
+    line-height: 1.5; /*высота строки*/
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/*CSS для кнопки закрытия окна*/
+.iw-close {
+    position:absolute;
+	top:15px; /*отступ сверху*/
+	right:10px; /*отступ справа*/
+    font-size: 24px; /*размер шрифта*/
+    color: #555; /*цвет шрифта*/
+    text-decoration: none;
+}
+
+.iw-close:hover, .iw-close:focus {
+    color: #000; /*цвет шрифта при наведении*/
+    cursor: pointer;
+}
+
+/*CSS для блока с текстом модального окна*/
+.iw-modal-text {
+  padding: 15px 20px; /*внутренний отступ*/
+}
+
+/**MEDIA**/
+@media (min-width: 550px) {
+  .iw-modal-wrapper {
+      max-width: 500px;
+   }
+}
