@@ -76,8 +76,9 @@
             {% endfor %}
         <p align="center">
             {{form.submit(type="submit", class="iw-modal-btn")}}
-        <!-- Модальное окно -->
-        <div id="iw-modal" class="iw-modal">
+
+        <!-- Модальное окно 01 -->
+        <div id="iw-modal-01" class="iw-modal">
             <div class="iw-modal-wrapper">
                 <div class="iw-CSS-modal-inner">
                     <div class="iw-modal-header">
@@ -85,11 +86,27 @@
                         <a href="#close" title="Закрыть" class="iw-close">×</a>
                     </div>
                     <div class="iw-modal-text">
-                        <p>Такой пользователь уже есть</p>
+                        <p>Введённый пароль и его повторение не совпадают</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Модальное окно 02 -->
+        <div id="iw-modal-02" class="iw-modal">
+            <div class="iw-modal-wrapper">
+                <div class="iw-CSS-modal-inner">
+                    <div class="iw-modal-header">
+                        <h3 class="iw-modal-title">Внимание!</h3>
+                        <a href="#close" title="Закрыть" class="iw-close">×</a>
+                    </div>
+                    <div class="iw-modal-text">
+                        <p>Такой пользователь уже зарегестрирован в системе</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </form>
 

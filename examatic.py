@@ -41,9 +41,9 @@ def load_user(user_id):
 def index():
     """Корневая страница"""
     db = db_session.create_session()
-    # Фильтруем вопросы - исключаем черновики (Question.is_published == 0):
+    # Фильтруем вопросы - оставляем готовые:
     db_questions = db.query(Question).filter(Question.is_published == 1)
-    # Рендерим вопросы на шаблон страницы:
+    # Рендерим готовые вопросы на шаблон страницы:
     return render_template('index.html', questions=db_questions)
 
 
@@ -53,17 +53,13 @@ def register():
     """Страница регистрации"""
     regform = RegisterForm()
     if regform.validate_on_submit():
+        # Модальное окно на ошибку "Введённые пароли не совпадают":
         if regform.password.data != regform.password_again.data:
-            # TODO: модальное окно на ошибку
-            return render_template(
-                'register.html',
-                title='Регистрация',
-                form=regform,
-                message='Пароли не совпадают'
-            )
+            return redirect('/register#iw-modal-01')
         db = db_session.create_session()
+        # Модальное окно на ошибку "Такой пользователь уже есть":
         if db.query(User).filter(User.email == regform.email.data).first():
-            return redirect('/register#iw-modal')
+            return redirect('/register#iw-modal-02')
         user = User(
             name=regform.name.data,
             surname=regform.surname.data,
