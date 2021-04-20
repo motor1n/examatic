@@ -2,7 +2,7 @@
 
 import datetime
 import sqlalchemy
-from sqlalchemy import orm
+# from sqlalchemy import orm
 from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -27,7 +27,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     # Вопрос преподавателя.
     # Используем метод relation(),
     # который связывает вопрос и конкретного преподавателя:    
-    ### question = orm.relation('Question', back_populates='user')
+    # question = orm.relation('Question', back_populates='user')
     # Эта строка связана со строкой из файла question.py --> user = orm.relation('User')
 
     # Хранить пароль в открытом виде нельзя, поэтому во Flask есть инструменты,
