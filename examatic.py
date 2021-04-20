@@ -1,5 +1,5 @@
 """
-examatic 0.0.4
+examatic 0.0.5
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -108,7 +108,6 @@ def login():
 def ticket():
     """Экзаменационный билет"""
     global current_ticket, questions
-    # TODO: Выдача билета пользователю
 
     # Генерируем перемешанный набор номеров вопросов:
     questions = ticket.create_questions(NUMBER_QUESTIONS)

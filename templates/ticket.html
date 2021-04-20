@@ -15,8 +15,8 @@
                           </div>
                       </div>
                       <div class="col-md-6 col-12 tm-site-text-box">
-                          <h1 class="tm-site-title" align="right">Приступайте!</h1>
                           <h6 class="tm-site-description" align="right">Желаем удачи:)</h6>
+                          <h1 class="tm-site-title" align="right">Приступайте!</h1>
                       </div>
                   </div>
               </div>
@@ -33,12 +33,30 @@
     <div class="tm-paging-links">
         <nav>
             <ul>
-                <li class="tm-paging-item"><a href="#" class="tm-paging-link active">Вопрос №1</a></li>
-                <li class="tm-paging-item"><a href="#" class="tm-paging-link">Вопрос №2</a></li>
+                <li class="tm-paging-item"><a href="#" class="tm-paging-link active">Вопрос-01</a></li>
+                <li class="tm-paging-item"><a href="#" class="tm-paging-link">Вопрос-02</a></li>
                 <li class="tm-paging-item"><a href="#" class="tm-paging-link">Практика</a></li>
             </ul>
         </nav>
     </div>
+
+    <div class="row tm-gallery">
+        <!-- Вопрос №1 -->
+        <div id="tm-gallery-page-вопрос-01" class="tm-gallery-page">
+            <h3>{{ticket[0]}}</h3>
+        </div>
+
+        <!-- Вопрос №2 -->
+        <div id="tm-gallery-page-вопрос-02" class="tm-gallery-page hidden">
+            <h3>{{ticket[1]}}</h3>
+        </div>
+
+        <!-- Практика -->
+        <div id="tm-gallery-page-практика" class="tm-gallery-page hidden">
+            <h3>{{ticket[2]}}</h3>
+        </div>
+    </div>
+
 </main>
 
 {% endblock %}

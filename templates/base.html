@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Экзамен | Программирование</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400">
+        <link rel="stylesheet" href="../static/css/all.min.css">
         <link rel="stylesheet" href="../static/css/modal.css">
         <link rel="stylesheet" href="../static/css/style.css">
     </head>
@@ -19,5 +20,18 @@
 
         <script src="../static/js/jquery.min.js"></script>
         <script src="../static/js/parallax.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $('.tm-paging-link').click(function(e){
+                    e.preventDefault();
+                    var page = $(this).text().toLowerCase();
+                    $('.tm-gallery-page').addClass('hidden');
+                    $('#tm-gallery-page-' + page).removeClass('hidden');
+                    $('.tm-paging-link').removeClass('active');
+                    $(this).addClass("active");
+                });
+            });
+        </script>
+
     </body>
 </html>
