@@ -27,8 +27,27 @@
 <main>
     <header class="row tm-welcome-section">
         <h2 class="col-12 text-center tm-section-title">{{surname}} {{name}} {{middlename}}</h2>
-        <p class="col-12 text-center">{{ticket}}.</p>
+        <p class="col-12 text-center">
+            Экзаменационный билет состоит из двух вопросов и практического задания.
+            Время на подготовку: 45 минут. Приступайте!
+        </p>
     </header>
+
+    <!--
+    <script src="//megatimer.ru/get/d3f1d933a02838188e5e3473a26f1484.js"></script><br><br>
+    -->
+
+    <div class="timer" align="center"></div><br><br>
+    <script>
+        var timerElem = document.querySelector('.timer'),
+            i = 60 * 45,
+            timerId = setInterval(function(){
+                i--;
+                timerElem.innerHTML = Math.floor(i / 60) + ':' + Math.floor(i % 60 / 10) + i % 60 % 10;
+                if (i < 1) clearInterval(timerId);
+            },
+            1000);
+    </script>
 
     <div class="tm-paging-links">
         <nav>
