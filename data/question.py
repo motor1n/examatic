@@ -3,7 +3,6 @@
 import datetime
 import sqlalchemy
 from flask_wtf import FlaskForm
-# from sqlalchemy import orm
 from sqlalchemy_serializer import SerializerMixin
 from wtforms import StringField, TextAreaField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
@@ -23,19 +22,10 @@ class Question(SqlAlchemyBase, SerializerMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     is_published = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
 
-    # Значения user_id имеют внешние ключи в таблице users
-    # Это задаётся в параметре sqlalchemy.ForeignKey('users.id')
-    # user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
-
-    # Организовываем связь с таблицей users, используя метод relation(),
-    # который указывает на пользователя, создавшего сообщение:
-    # user = orm.relation('User')
-    # Эта строка связана
-    # со строкой Question = orm.relation('Question', back_populates='user') из файла users.py
-
 
 class QuestionForm(FlaskForm):
     title = StringField('Заголовок', validators=[DataRequired()])
-    content = TextAreaField('Содержание')
+    number = StringField('Номер вопроса:')
+    content = TextAreaField('Содержание вопроса:')
     is_published = BooleanField('Черновик')
-    submit = SubmitField('Применить')
+    submit = SubmitField('Добавить вопрос')

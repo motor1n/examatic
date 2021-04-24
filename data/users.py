@@ -2,7 +2,7 @@
 
 import datetime
 import sqlalchemy
-# from sqlalchemy import orm
+from sqlalchemy import orm
 from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -24,16 +24,15 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
-    # Вопрос преподавателя.
+    # Экзаменационный билет пользователя.
     # Используем метод relation(),
-    # который связывает вопрос и конкретного преподавателя:    
-    # question = orm.relation('Question', back_populates='user')
-    # Эта строка связана со строкой из файла question.py --> user = orm.relation('User')
+    # который связывает пользователя и экзаменационный билет, который он взял:
+    ticket = orm.relation('Ticket', back_populates='user')
+    # Эта строка связана со строкой из файла ticket.py --> user = orm.relation('User')
 
     # Хранить пароль в открытом виде нельзя, поэтому во Flask есть инструменты,
     # которые позволяют получить хешированное значение по строке и проверить,
     # соответствует ли пароль хешу, который хранится в нашей базе данных.
-
     def set_password(self, password):
         """Создание хэша пароля"""
         # Функция используется при регистрации пользователя.

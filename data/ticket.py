@@ -1,20 +1,44 @@
+"""Модель для работы с экзаменационными билетами"""
+
+import sqlalchemy
 from random import shuffle
-# from datetime import date
+from datetime import datetime
 # from data import db_session
+from sqlalchemy_serializer import SerializerMixin
 from data.question import Question
+from sqlalchemy import orm
 # from examatic import DATABASE
+from . db_session import SqlAlchemyBase
 
 
-class Ticket:
+class Ticket(SqlAlchemyBase, SerializerMixin):
     def __init__(self, number_questions, questions_in_ticket):
         # Количество экзаменационных вопросов:
         self.number_questions = number_questions
         # Количество вопросов в одном билете:
         self.questions_in_ticket = questions_in_ticket
-        # Список премешанных номеров экзаменационных вопросов:
-        # self.questions = [10, 8, 1, 11, 17, 7, 9, 3, 16, 12, 0, 14, 2, 15, 6, 4, 5, 13, 18, 19]
         # Словарь для хранения выданных билетов:
         self.tickets = dict()
+
+    # Задаём имя таблицы:
+    __tablename__ = 'tickets'
+
+    # Задаём столбцы таблицы users:
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
+
+    # Значения user_id имеют внешние ключи в таблице users
+    # Это задаётся в параметре sqlalchemy.ForeignKey('users.id')
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
+    # Кроме того, организовываем связь с таблицей users, используя метод relation(),
+    # который указывает на пользователя, получившего экзаменационный билет:
+    user = orm.relation('User')
+    # Эта строка связана
+    # со строкой ticket = orm.relation('Ticket', back_populates='user') из файла users.py
+
+    question1 = sqlalchemy.Column(sqlalchemy.Integer)
+    question2 = sqlalchemy.Column(sqlalchemy.Integer)
+    practic = sqlalchemy.Column(sqlalchemy.Integer)
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.now)
 
     @staticmethod
     def load_questions(db):
@@ -36,35 +60,3 @@ class Ticket:
         # Перемешиваем номера:
         shuffle(tickets_list)
         return tickets_list
-
-
-"""
-if __name__ == '__main__':
-    ticket = Ticket(NUMBER_QUESTIONS, QUESTIONS_IN_TICKET)
-
-    # Бесконечный цикл:
-    while True:
-        # Генерируем набор перемешанных вопросов:
-        questions = ticket.create_questions(NUMBER_QUESTIONS)
-        print(questions)
-
-        # Пока имеются вопросы в очередном наборе:
-        while questions:
-            student = input('Фамилия Имя Отчество: ')
-
-            # Обработка исключения, когда формирование очередного билета
-            # вызовет обращение к несуществующему элементу:
-            try:
-                ticket.tickets[student] = ticket.create_ticket(QUESTIONS_IN_TICKET)
-            except IndexError as error:
-                # В этом случае заново генерируем новый набор вопросов:
-                questions = ticket.create_questions(NUMBER_QUESTIONS)
-                # И создаём новый билет из нового набора:
-                ticket.tickets[student] = ticket.create_ticket(QUESTIONS_IN_TICKET)
-
-            # Выводим сообщение:
-            print(f'Студент: {student} ➤ вопрос(ы): {ticket.tickets[student]}\n')
-            print(ticket.tickets)
-
-        tickets = [f'{s} ➤ вопрос(ы): {q}\n' for s, q in ticket.tickets.items()]
-"""
