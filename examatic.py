@@ -1,5 +1,5 @@
 """
-examatic 0.0.5
+examatic 0.1.0
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -7,6 +7,7 @@ developed on flask
 import datetime
 from flask import Flask, render_template, make_response, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+# from sqlalchemy import exc
 # from sqlalchemy import or_
 # from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
@@ -32,6 +33,9 @@ questions = list()
 
 # Готовый билет с вопросами (строки) для текущего пользователя:
 current_ticket = list()
+
+# Словарь с выданными билетами:
+tickets = dict()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -134,23 +138,54 @@ def ticket():
     # Заполняем билет текстами вопросов по их номерам:
     current_ticket = [lst[q_num] for q_num in ticket.tickets[user_email]]
 
-    # Записываем билет (номера вопросов и номер практики) в базу данных:
-    ticket_tmp = Ticket(None, None)
-    ticket_tmp.user_id = current_user.id
-    ticket_tmp.question1 = ticket.tickets[user_email][0]
-    ticket_tmp.question2 = ticket.tickets[user_email][1]
-    ticket_tmp.practic = ticket.tickets[user_email][2]
-    db.add(ticket_tmp)
-    db.commit()
+    # Смотрим, есть ли id текущего пользователя в таблице tickets:
+    ticket_tmp = db.query(Ticket).filter(Ticket.user_id == current_user.id).first()
+    if ticket_tmp:
+        # Если есть, то значит пользователь уже взял билет.
+        # Читаем из БД билет, взятый пользователем ранее:
+        current_ticket = [
+            lst[ticket_tmp.question1 - 1],
+            lst[ticket_tmp.question2 - 1],
+            lst[ticket_tmp.practic - 1]
+        ]
+        # Рендерим билет на шаблон страницы:
+        return render_template(
+            'ticket.html',
+            name=current_user.name,
+            surname=current_user.surname,
+            middlename=current_user.middlename,
+            ticket=current_ticket
+        )
+    else:
+        # У пользователя ещё нет билета:
+        ticket_tmp = Ticket(None, None)
+        ticket_tmp.user_id = current_user.id
+        ticket_tmp.question1 = ticket.tickets[user_email][0] + 1
+        ticket_tmp.question2 = ticket.tickets[user_email][1] + 1
+        ticket_tmp.practic = ticket.tickets[user_email][2] + 1
+        db.add(ticket_tmp)
+        db.commit()
+        # Рендерим билет на шаблон страницы:
+        return render_template(
+            'ticket.html',
+            name=current_user.name,
+            surname=current_user.surname,
+            middlename=current_user.middlename,
+            ticket=current_ticket
+        )
 
-    # Рендерим билет на шаблон страницы:
-    return render_template(
-        'ticket.html',
-        name=current_user.name,
-        surname=current_user.surname,
-        middlename=current_user.middlename,
-        ticket=current_ticket
-    )
+
+# URL http://localhost:5000/issued_tickets
+@app.route('/issued_tickets', methods=['GET'])
+@login_required
+def issued_tickets():
+    """Список выданных билетов"""
+    db = db_session.create_session()
+    db_tickets = db.query(Ticket)
+    # db_users = db.query(User)
+    # db_tickets = db.query(Ticket).join(User, Ticket.user_id == User.name)
+    # Рендерим билеты на шаблон страницы:
+    return render_template('issued_tickets.html', tickets=db_tickets)
 
 
 '''
@@ -175,8 +210,9 @@ def add_question():
         title='Добавление вопроса',
         form=question_form
     )
+'''
 
-
+'''
 @app.route('/question/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_question(question_id):

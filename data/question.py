@@ -25,6 +25,7 @@ class Question(SqlAlchemyBase, SerializerMixin):
 
 class QuestionForm(FlaskForm):
     title = StringField('Заголовок', validators=[DataRequired()])
-    content = TextAreaField('Содержание')
+    number = StringField('Номер вопроса:')
+    content = TextAreaField('Содержание вопроса:')
     is_published = BooleanField('Черновик')
-    submit = SubmitField('Применить')
+    submit = SubmitField('Добавить вопрос')

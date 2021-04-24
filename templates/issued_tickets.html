@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+      <div class="placeholder">
+          <div class="parallax-window" data-parallax="scroll" data-image-src="static/img/python-logo.jpg">
+              <div class="tm-header">
+                  <div class="row tm-header-inner">
+                      <div class="col-md-6 col-12">
+                          <img src="static/img/simple-logo.png" alt="Logo" class="tm-site-logo">
+                          <div class="tm-site-text-box">
+                              <h1 class="tm-site-title">Экзамен</h1>
+                              <h6 class="tm-site-description">Программирование на языке Python</h6>
+                          </div>
+                      </div>
+                      <nav class="col-md-6 col-12 tm-nav">
+                          <ul class="tm-nav-ul">
+                              <li class="tm-nav-li"><a href="/index" class="tm-nav-link active">Вопросы</a></li>
+                              <li class="tm-nav-li"><a href="/register" class="tm-nav-link">Регистрация</a></li>
+                              <li class="tm-nav-li"><a href="/login" class="tm-nav-link">Экзамен</a></li>
+                          </ul>
+                      </nav>
+                  </div>
+              </div>
+          </div>
+      </div>
+</div>
+
+<main>
+    <header class="row tm-welcome-section">
+        <h2 class="col-12 text-center tm-section-title">Выданные билеты</h2>
+        <p class="col-12 text-center">Информация о билетах на руках.</p>
+    </header>
+</main>
+
+
+<div class="container" style="padding-left: 100px; padding-right: 100px;">
+    <table style="width: 100%;"   border="1">
+        <tbody>
+            <tr align="center">
+                <td>№</td>
+                <td>Фамилия Имя Отчество</td>
+                <td>Вопрос №1</td>
+                <td>Вопрос №2</td>
+                <td>Практика</td>
+            </tr>
+            {% for item in tickets %}
+                <tr>
+                    <td style="text-align: right;">{{loop.index}}</td>
+                    <td>{{item.user.surname}} {{item.user.name}} {{item.user.middlename}}</td>
+                    <td style="text-align: right;">{{item.question1}}</td>
+                    <td style="text-align: right;">{{item.question2}}</td>
+                    <td style="text-align: right;">{{item.practic}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
