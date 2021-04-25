@@ -1,5 +1,5 @@
 """
-examatic 0.1.0
+examatic 0.1.1
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -13,7 +13,6 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.utils import redirect
 from data import db_session
 from data.question import Question
-# from data.ticket import load_questions
 from data.users import User
 from data.register import RegisterForm
 from data.login import LoginForm
@@ -22,26 +21,21 @@ from data import question_api
 
 
 DATABASE = 'dbase/examen.db'
-# Количество экзаменационных вопросов:
-NUMBER_QUESTIONS = 20
 
 # Количество вопросов в билете:
-QUESTIONS_IN_TICKET = 3
+QUESTIONS_IN_TICKET = 2
 
+# Глобальные переменные: ###
 # Список для перемешанного набора номеров вопросов:
 questions = list()
-
-# Готовый билет с вопросами (строки) для текущего пользователя:
+# Готовый билет с вопросами (список строк) для текущего пользователя:
 current_ticket = list()
-
-# Словарь с выданными билетами:
-tickets = dict()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
-# Инициализация менеджера логинов
+# Инициализация менеджера логинов:
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -112,31 +106,36 @@ def login():
 def ticket():
     """Экзаменационный билет"""
     global current_ticket, questions
+    db = db_session.create_session()
+
+    # Количество готовых экзаменационных вопросов:
+    number_questions = count_questions()
 
     # Генерируем перемешанный набор номеров вопросов:
-    questions = ticket.create_questions(NUMBER_QUESTIONS)
+    questions = ticket.create_questions(number_questions)
 
     # Почта текущего пользователя, именно по ней идёт авторизация:
-    user_email = current_user.email
+    current_user_email = current_user.email
 
     # Обработка исключения, когда формирование очередного билета
     # вызовет обращение к несуществующему элементу:
     try:
-        ticket.tickets[user_email] = create_ticket(QUESTIONS_IN_TICKET)
+        ticket.tickets[current_user_email] = create_ticket(QUESTIONS_IN_TICKET)
     except IndexError:
         # В этом случае заново генерируем новый набор номеров вопросов:
-        questions = ticket.create_questions(NUMBER_QUESTIONS)
+        questions = ticket.create_questions(number_questions)
         # И создаём новый билет из нового набора:
-        ticket.tickets[user_email] = create_ticket(QUESTIONS_IN_TICKET)
+        ticket.tickets[current_user_email] = create_ticket(QUESTIONS_IN_TICKET)
 
-    print(f'Студент: {user_email} ➤ вопрос(ы): {ticket.tickets[user_email]}\n')
-    db = db_session.create_session()
+    print(f'Студент: {current_user_email} ➤ вопрос(ы): {ticket.tickets[current_user_email]}\n')
 
     # Список строк экзаменационных вопросов из базы данных:
     lst = ticket.load_questions(db)
 
     # Заполняем билет текстами вопросов по их номерам:
-    current_ticket = [lst[q_num] for q_num in ticket.tickets[user_email]]
+    current_ticket = [lst[q_num] for q_num in ticket.tickets[current_user_email]]
+
+    # Заполняем билет номером
 
     # Смотрим, есть ли id текущего пользователя в таблице tickets:
     ticket_tmp = db.query(Ticket).filter(Ticket.user_id == current_user.id).first()
@@ -158,11 +157,11 @@ def ticket():
         )
     else:
         # У пользователя ещё нет билета:
-        ticket_tmp = Ticket(None, None)
+        ticket_tmp = Ticket()
         ticket_tmp.user_id = current_user.id
-        ticket_tmp.question1 = ticket.tickets[user_email][0] + 1
-        ticket_tmp.question2 = ticket.tickets[user_email][1] + 1
-        ticket_tmp.practic = ticket.tickets[user_email][2] + 1
+        ticket_tmp.question1 = ticket.tickets[current_user_email][0] + 1
+        ticket_tmp.question2 = ticket.tickets[current_user_email][1] + 1
+        ticket_tmp.practic = ticket.tickets[current_user_email][2] + 1
         db.add(ticket_tmp)
         db.commit()
         # Рендерим билет на шаблон страницы:
@@ -298,6 +297,12 @@ def not_found():
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
+def count_questions():
+    """Определение количества вопросов"""
+    db = db_session.create_session()
+    return len(ticket.load_questions(db))
+
+
 def create_ticket(number):
     """Функция формирует номера вопросов для одного билета"""
     # параметр number - количество вопросов в одном билете:
@@ -312,8 +317,8 @@ def create_ticket(number):
 if __name__ == '__main__':
     db_session.global_init(DATABASE)
     app.register_blueprint(question_api.blueprint)  # Регистрация схемы Blueprint
-    # Создаём экземпляр объекта "Билет", где
-    # NUMBER_QUESTIONS - количество экзаменационных вопросов
-    # QUESTIONS_IN_TICKET - количество впросов в одном билете:
-    ticket = Ticket(NUMBER_QUESTIONS, QUESTIONS_IN_TICKET)
+
+    # Создаём экземпляр объекта "Билет":
+    ticket = Ticket()
+
     app.run(host='localhost', debug=True)

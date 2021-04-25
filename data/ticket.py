@@ -3,20 +3,18 @@
 import sqlalchemy
 from random import shuffle
 from datetime import datetime
-# from data import db_session
 from sqlalchemy_serializer import SerializerMixin
 from data.question import Question
 from sqlalchemy import orm
-# from examatic import DATABASE
-from . db_session import SqlAlchemyBase
+from .db_session import SqlAlchemyBase
 
 
 class Ticket(SqlAlchemyBase, SerializerMixin):
-    def __init__(self, number_questions, questions_in_ticket):
+    def __init__(self):
         # Количество экзаменационных вопросов:
-        self.number_questions = number_questions
+        # self.number_questions = number_questions
         # Количество вопросов в одном билете:
-        self.questions_in_ticket = questions_in_ticket
+        # self.questions_in_ticket = questions_in_ticket
         # Словарь для хранения выданных билетов:
         self.tickets = dict()
 
@@ -47,10 +45,6 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
         # Фильтруем вопросы - оставляем готовые:
         db_questions = db.query(Question).filter(Question.is_published == 1)
         return [item.content for item in db_questions]
-
-    def count_questions(self, db):
-        """Определение количества вопросов"""
-        return len(self.load_questions(db))
 
     @staticmethod
     def create_questions(number):
