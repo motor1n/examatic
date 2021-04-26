@@ -1,9 +1,10 @@
 """
-examatic 0.1.1
+examatic 0.1.8
 Exam-a-Ticket Generator
 developed on flask
 """
 
+import os
 import datetime
 from flask import Flask, render_template, make_response, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -25,9 +26,17 @@ DATABASE = 'dbase/examen.db'
 # Количество вопросов в билете:
 QUESTIONS_IN_TICKET = 2
 
-# Глобальные переменные: ###
+# Путь к файлам практических заданий:
+PATH_PRACTICS = 'static/img/practic'
+# Количество практических заданий:
+number_practics = len(os.listdir(path=PATH_PRACTICS))
+
 # Список для перемешанного набора номеров вопросов:
 questions = list()
+
+# Список для перемешанного набора номеров практики:
+practics = list()
+
 # Готовый билет с вопросами (список строк) для текущего пользователя:
 current_ticket = list()
 
@@ -105,37 +114,14 @@ def login():
 @app.route('/ticket')
 def ticket():
     """Экзаменационный билет"""
-    global current_ticket, questions
+    global current_ticket, questions, practics
     db = db_session.create_session()
-
-    # Количество готовых экзаменационных вопросов:
-    number_questions = count_questions()
-
-    # Генерируем перемешанный набор номеров вопросов:
-    questions = ticket.create_questions(number_questions)
 
     # Почта текущего пользователя, именно по ней идёт авторизация:
     current_user_email = current_user.email
 
-    # Обработка исключения, когда формирование очередного билета
-    # вызовет обращение к несуществующему элементу:
-    try:
-        ticket.tickets[current_user_email] = create_ticket(QUESTIONS_IN_TICKET)
-    except IndexError:
-        # В этом случае заново генерируем новый набор номеров вопросов:
-        questions = ticket.create_questions(number_questions)
-        # И создаём новый билет из нового набора:
-        ticket.tickets[current_user_email] = create_ticket(QUESTIONS_IN_TICKET)
-
-    print(f'Студент: {current_user_email} ➤ вопрос(ы): {ticket.tickets[current_user_email]}\n')
-
     # Список строк экзаменационных вопросов из базы данных:
     lst = ticket.load_questions(db)
-
-    # Заполняем билет текстами вопросов по их номерам:
-    current_ticket = [lst[q_num] for q_num in ticket.tickets[current_user_email]]
-
-    # Заполняем билет номером
 
     # Смотрим, есть ли id текущего пользователя в таблице tickets:
     ticket_tmp = db.query(Ticket).filter(Ticket.user_id == current_user.id).first()
@@ -145,8 +131,12 @@ def ticket():
         current_ticket = [
             lst[ticket_tmp.question1 - 1],
             lst[ticket_tmp.question2 - 1],
-            lst[ticket_tmp.practic - 1]
+            ticket_tmp.practic
         ]
+
+        # Заменяем номер практического задания на путь к файлу:
+        current_ticket[-1] = path_picture(current_ticket[-1])
+
         # Рендерим билет на шаблон страницы:
         return render_template(
             'ticket.html',
@@ -156,14 +146,44 @@ def ticket():
             ticket=current_ticket
         )
     else:
-        # У пользователя ещё нет билета:
+        # Иначе у пользователя ещё нет билета.
+        try:
+            # Обработка исключения, когда формирование очередного билета
+            # вызовет обращение к несуществующему элементу:
+            ticket.tickets[current_user_email] = create_ticket(QUESTIONS_IN_TICKET)
+        except IndexError:
+            # В этом случае заново генерируем новый набор номеров вопросов:
+            questions = ticket.create_questions(count_questions())
+            # И создаём новый билет из нового набора:
+            ticket.tickets[current_user_email] = create_ticket(QUESTIONS_IN_TICKET)
+
+        print(f'Студент: {current_user_email} ➤ вопрос(ы): {ticket.tickets[current_user_email]}\n')
+
+        # Заполняем билет текстами вопросов по их номерам:
+        current_ticket = [lst[q_num] for q_num in ticket.tickets[current_user_email]]
+
+        try:
+            # Добавляем в билет номер практического задания:
+            current_ticket.append(create_practic_number())
+        except IndexError:
+            practics = ticket.create_practics(number_practics)
+            current_ticket.append(create_practic_number())
+
+        print('questions:', questions)
+        print('practics:', practics)
+        print('current_ticket:', current_ticket)
+
         ticket_tmp = Ticket()
         ticket_tmp.user_id = current_user.id
         ticket_tmp.question1 = ticket.tickets[current_user_email][0] + 1
         ticket_tmp.question2 = ticket.tickets[current_user_email][1] + 1
-        ticket_tmp.practic = ticket.tickets[current_user_email][2] + 1
+        ticket_tmp.practic = current_ticket[-1]
         db.add(ticket_tmp)
         db.commit()
+
+        # Заменяем номер практического задания на путь к файлу:
+        current_ticket[-1] = path_picture(current_ticket[-1])
+
         # Рендерим билет на шаблон страницы:
         return render_template(
             'ticket.html',
@@ -304,7 +324,7 @@ def count_questions():
 
 
 def create_ticket(number):
-    """Функция формирует номера вопросов для одного билета"""
+    """Формирование номеров экзаменационных вопросов для одного билета"""
     # параметр number - количество вопросов в одном билете:
     if number == 1:
         # Возвращаем, если в билете всего один вопрос:
@@ -314,11 +334,41 @@ def create_ticket(number):
         return sorted([questions.pop() for _ in range(number)])
 
 
+def create_practic_number():
+    """Создание номера практического задания для экзаменационного билета"""
+    if practics:
+        # Если набор ещё не пустой, берём оттуда номер:
+        return practics.pop()
+    else:
+        # Иначе создаём новый набор и берём номер оттуда:
+        ticket.create_practics(number_practics)
+        return practics.pop()
+
+
+def path_picture(number_practic):
+    """Формирование пути к изображению с практическим заданием"""
+    # Добавление ведущих нулей в имя файла при помощи метода zfill()
+    zeros = 3  # три ведущих нуля
+    number_file = str(number_practic).zfill(zeros)
+    return f'../static/img/practic/{number_file}.png'
+
+
 if __name__ == '__main__':
     db_session.global_init(DATABASE)
     app.register_blueprint(question_api.blueprint)  # Регистрация схемы Blueprint
 
     # Создаём экземпляр объекта "Билет":
     ticket = Ticket()
+
+    # Количество готовых экзаменационных вопросов в БД:
+    # number_questions = count_questions()
+
+    # Генерируем перемешанный набор номеров экзаменационных вопросов:
+    # questions = ticket.create_questions(count_questions())
+    # print('questions:', questions)
+
+    # Генерируем перемешанный набор номеров практических заданий:
+    # practics = ticket.create_practics(number_practics)
+    # print('practics:', practics)
 
     app.run(host='localhost', debug=True)

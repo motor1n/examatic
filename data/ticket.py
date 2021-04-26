@@ -48,9 +48,18 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
 
     @staticmethod
     def create_questions(number):
-        """Генератор перемешанного набора экзаменационных вопросов"""
+        """Генератор перемешанного набора номеров экзаменационных вопросов"""
         # number - количество экзаменационных вопросов
-        tickets_list = list(range(number))
+        questions_list = list(range(number))
         # Перемешиваем номера:
-        shuffle(tickets_list)
-        return tickets_list
+        shuffle(questions_list)
+        return questions_list
+
+    @staticmethod
+    def create_practics(number):
+        """Генератор перемешанного набора номеров практических заданий"""
+        # number - количество практических заданий
+        practics_list = list(range(1, number + 1))
+        # Перемешиваем номера:
+        shuffle(practics_list)
+        return practics_list
