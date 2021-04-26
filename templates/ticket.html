@@ -15,10 +15,7 @@
                           </div>
                       </div>
                       <div class="col-md-6 col-12 tm-site-text-box">
-                          <!--
-                          <h6 class="tm-site-description" align="right">Желаем удачи:)</h6>
-                          -->
-                          <div class="timer" align="right"></div>
+                          <div class="timer" style="font-size: 20px; font-weight: bold;" align="right"></div>
                           <h1 class="tm-site-title" align="right">Приступайте!</h1>
                       </div>
                   </div>
@@ -29,7 +26,8 @@
 
 <script>
     var timerElem = document.querySelector('.timer'),
-        i = 60 * 45,
+        // i - время в секундах
+        i = {{time}},
         timerId = setInterval(function(){
             i--;
             timerElem.innerHTML = Math.floor(i / 60) + ':' + Math.floor(i % 60 / 10) + i % 60 % 10;
@@ -44,7 +42,7 @@
         <h2 class="col-12 text-center tm-section-title">{{surname}} {{name}} {{middlename}}</h2>
         <p class="col-12 text-center">
             Экзаменационный билет состоит из двух вопросов и практического задания.
-            Время на подготовку: 45 минут. Приступайте!
+            Время на подготовку: {{source_time}}  минут. Приступайте!
         </p>
     </header>
 

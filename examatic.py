@@ -1,11 +1,11 @@
 """
-examatic 0.1.8
+examatic 0.1.9
 Exam-a-Ticket Generator
 developed on flask
 """
 
 import os
-import datetime
+import datetime as dt
 from flask import Flask, render_template, make_response, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 # from sqlalchemy import exc
@@ -22,6 +22,9 @@ from data import question_api
 
 
 DATABASE = 'dbase/examen.db'
+
+# Время на подготовку к экзамену (минут):
+TIME = 50
 
 # Количество вопросов в билете:
 QUESTIONS_IN_TICKET = 2
@@ -42,7 +45,7 @@ current_ticket = list()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
+app.config['PERMANENT_SESSION_LIFETIME'] = dt.timedelta(days=365)
 
 # Инициализация менеджера логинов:
 login_manager = LoginManager()
@@ -137,13 +140,31 @@ def ticket():
         # Заменяем номер практического задания на путь к файлу:
         current_ticket[-1] = path_picture(current_ticket[-1])
 
+        # Восстановление времени обратного отсчёта при закрытии страницы при помощи
+        # разницы времени получения билета и текущим временем повторного захода на страницу.
+
+        # Времени прошло:
+        time_has_passed = dt.datetime.now() - ticket_tmp.created_date
+        # Времени осталось:
+        time_left = dt.timedelta(minutes=TIME) - time_has_passed
+
+        """
+        if time_has_passed > dt.timedelta(minutes=TIME):
+            print('Время вышло...')
+        else:
+            print('Осталось времени:', time_left)
+            print('Осталось времени в секундах:', time_left.seconds)
+        """
+
         # Рендерим билет на шаблон страницы:
         return render_template(
             'ticket.html',
             name=current_user.name,
             surname=current_user.surname,
             middlename=current_user.middlename,
-            ticket=current_ticket
+            ticket=current_ticket,
+            source_time=TIME,
+            time=time_left.seconds
         )
     else:
         # Иначе у пользователя ещё нет билета.
@@ -190,7 +211,9 @@ def ticket():
             name=current_user.name,
             surname=current_user.surname,
             middlename=current_user.middlename,
-            ticket=current_ticket
+            ticket=current_ticket,
+            source_time=TIME,
+            time=TIME*60
         )
 
 
@@ -355,20 +378,8 @@ def path_picture(number_practic):
 
 if __name__ == '__main__':
     db_session.global_init(DATABASE)
-    app.register_blueprint(question_api.blueprint)  # Регистрация схемы Blueprint
-
+    # Регистрация схемы Blueprint
+    app.register_blueprint(question_api.blueprint)
     # Создаём экземпляр объекта "Билет":
     ticket = Ticket()
-
-    # Количество готовых экзаменационных вопросов в БД:
-    # number_questions = count_questions()
-
-    # Генерируем перемешанный набор номеров экзаменационных вопросов:
-    # questions = ticket.create_questions(count_questions())
-    # print('questions:', questions)
-
-    # Генерируем перемешанный набор номеров практических заданий:
-    # practics = ticket.create_practics(number_practics)
-    # print('practics:', practics)
-
     app.run(host='localhost', debug=True)
