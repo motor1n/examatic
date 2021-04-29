@@ -30,11 +30,18 @@
 <main>
     <header class="row tm-welcome-section">
         <h2 class="col-12 text-center tm-section-title">На экзамен!</h2>
-        <p class="col-12 text-center">Инструкция о порядке проведения экзамена.</p>
+        <p class="col-12 text-center">
+            После нажатия кнопки "Получить экзаменационный билет"
+            система случайным образом сгенерирует его для вас.
+            Сразу же начнётся обратный отсчёт времени, выделенного на подготовку.
+            Если вы случайно закроете данную страницу,
+            то на неё можно снова зайти по первоначальной ссылке,
+            выданной преподавателем.
+        </p>
     </header>
 </main>
 
-<form action="" method="post" style="padding-left: 100px; padding-right: 100px;">
+<form action="" method="post" style="padding-left: 200px; padding-right: 200px;">
     <div class="container">
         {{form.hidden_tag()}}
         <p>

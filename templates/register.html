@@ -30,11 +30,15 @@
 <main>
     <header class="row tm-welcome-section">
         <h2 class="col-12 text-center tm-section-title">Регистрация на экзамен</h2>
-        <p class="col-12 text-center">Инструкция о порядке регистрации.</p>
+        <p class="col-12 text-center">
+            Для получения экзаменационного билета необходимо зарегистрироваться.
+            Фамилия, имя и отчество должны совпадать с теми, что указаны в зачётной книжке.
+            В качестве почты используйте ваш университетский аккаунт в Google Workspace.
+        </p>
     </header>
 </main>
 
-<form action="" method="post" style="padding-left: 100px; padding-right: 100px;">
+<form action="" method="post" style="padding-left: 200px; padding-right: 200px;">
     <div class="container">
         {{form.hidden_tag()}}
         {{form.csrf_token}}

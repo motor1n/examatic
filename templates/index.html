@@ -30,11 +30,15 @@
 <main>
     <header class="row tm-welcome-section">
         <h2 class="col-12 text-center tm-section-title">Вопросы к экзамену</h2>
-        <p class="col-12 text-center">Информация о вопросах.</p>
+        <p class="col-12 text-center"><b>Направление:</b><br>44.03.05 Педагогическое образование<br>(с двумя профилями подготовки)</p>
+        <p><br></p>
+        <p class="col-12 text-center"><b>Профиль:</b><br>Математика и Информатика</p>
+        <p><br></p>
+        <p class="col-12 text-center"><b>Уровень высшего образования:</b><br>бакалавриат</p>
     </header>
 </main>
 
-<ol  style="padding-left: 100px">
+<ol  style="padding-left: 200px; padding-left: 200px;">
     {% for item in questions %}
         <li>{{item.content}}</li>
     {% endfor %}

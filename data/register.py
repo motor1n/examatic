@@ -10,7 +10,7 @@ class RegisterForm(FlaskForm):
     surname = StringField('Фамилия:', validators=[DataRequired()])
     name = StringField('Имя:', validators=[DataRequired()])
     middlename = StringField('Отчество:', validators=[DataRequired()])
-    email = EmailField('Почта:', validators=[DataRequired()])
+    email = EmailField('Электронная почта:', validators=[DataRequired()])
     password = PasswordField('Введите пароль:', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль:', validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться на экзамен')
