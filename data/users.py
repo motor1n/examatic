@@ -30,6 +30,12 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     ticket = orm.relation('Ticket', back_populates='user')
     # Эта строка связана со строкой из файла ticket.py --> user = orm.relation('User')
 
+    # Экзаменационный вопрос админа.
+    # Используем метод relation(),
+    # который связывает пользователя и экзаменационный билет, который он добавил:
+    question = orm.relation('Question', back_populates='user')
+    # Эта строка связана со строкой из файла question.py --> user = orm.relation('User')
+
     # Хранить пароль в открытом виде нельзя, поэтому во Flask есть инструменты,
     # которые позволяют получить хешированное значение по строке и проверить,
     # соответствует ли пароль хешу, который хранится в нашей базе данных.

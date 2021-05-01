@@ -1,19 +1,19 @@
 """
-examatic 0.1.9
+examatic 0.2.0
 Exam-a-Ticket Generator
 developed on flask
 """
 
 import os
 import datetime as dt
-from flask import Flask, render_template, make_response, session, jsonify
+from flask import Flask, render_template, make_response, session, jsonify, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 # from sqlalchemy import exc
 # from sqlalchemy import or_
-# from werkzeug.exceptions import abort
+from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 from data import db_session
-from data.question import Question
+from data.question import Question, QuestionForm
 from data.users import User
 from data.register import RegisterForm
 from data.login import LoginForm
@@ -145,16 +145,13 @@ def ticket():
 
         # Времени прошло:
         time_has_passed = dt.datetime.now() - ticket_tmp.created_date
-        # Времени осталось:
-        time_left = dt.timedelta(minutes=TIME) - time_has_passed
 
-        """
+        # Если прошедшее время больше чем выделенное, то его не осталось:
         if time_has_passed > dt.timedelta(minutes=TIME):
-            print('Время вышло...')
+            time_left = dt.timedelta(seconds=1)
         else:
-            print('Осталось времени:', time_left)
-            print('Осталось времени в секундах:', time_left.seconds)
-        """
+            # иначе, времени осталось:
+            time_left = dt.timedelta(minutes=TIME) - time_has_passed
 
         # Рендерим билет на шаблон страницы:
         return render_template(
@@ -217,20 +214,19 @@ def ticket():
         )
 
 
-# URL http://localhost:5000/issued_tickets
-@app.route('/issued_tickets', methods=['GET'])
+# URL http://localhost:5000/issued
+@app.route('/issued', methods=['GET'])
 @login_required
-def issued_tickets():
+def issued():
     """Список выданных билетов"""
     db = db_session.create_session()
     db_tickets = db.query(Ticket)
     # db_users = db.query(User)
     # db_tickets = db.query(Ticket).join(User, Ticket.user_id == User.name)
     # Рендерим билеты на шаблон страницы:
-    return render_template('issued_tickets.html', tickets=db_tickets)
+    return render_template('issued.html', tickets=db_tickets)
 
 
-'''
 # URL http://localhost:5000/question
 @app.route('/question',  methods=['GET', 'POST'])
 @login_required
@@ -240,9 +236,9 @@ def add_question():
     if question_form.validate_on_submit():
         db = db_session.create_session()
         question = Question()
-        question.title = question_form.title.data
+        question.number = question_form.number.data
         question.content = question_form.content.data
-        question.is_published = question_form.is_published.data
+        question.is_published = not question_form.is_published.data
         current_user.question.append(question)
         db.merge(current_user)
         db.commit()
@@ -252,14 +248,13 @@ def add_question():
         title='Добавление вопроса',
         form=question_form
     )
-'''
 
-'''
-@app.route('/question/<int:id>', methods=['GET', 'POST'])
+
+@app.route('/question/<int:question_id>', methods=['GET', 'POST'])
 @login_required
 def edit_question(question_id):
     """Редактирование вопроса"""
-    form = QuestionForm()
+    question_form = QuestionForm()
     if request.method == 'GET':
         db = db_session.create_session()
         question = db.query(Question).filter(
@@ -267,29 +262,33 @@ def edit_question(question_id):
             Question.user == current_user
         ).first()
         if question:
-            form.title.data = question.title
-            form.content.data = question.content
-            form.is_published.data = question.is_published
+            question_form.number.data = question.number
+            question_form.content.data = question.content
+            question_form.is_published.data = question.is_published
         else:
             abort(404)
-    if form.validate_on_submit():
+    if question_form.validate_on_submit():
         db = db_session.create_session()
         question = db.query(Question).filter(
             Question.id == question_id,
             Question.user == current_user
         ).first()
         if question:
-            question.title = form.title.data
-            question.content = form.content.data
-            question.is_published = form.is_published.data
+            question.number = question_form.number.data
+            question.content = question_form.content.data
+            question.is_published = question_form.is_published.data
             db.commit()
             return redirect('/')
         else:
             abort(404)
-    return render_template('question.html', title='Редактирование вопроса', form=form)
+    return render_template(
+        'question.html',
+        title='Редактирование вопроса',
+        form=question_form
+    )
 
 
-@app.route('/question_delete/<int:id>', methods=['GET', 'POST'])
+@app.route('/question_delete/<int:question_id>', methods=['GET', 'POST'])
 @login_required
 def question_delete(question_id):
     """Удаление вопроса"""
@@ -304,7 +303,6 @@ def question_delete(question_id):
     else:
         abort(404)
     return redirect('/')
-'''
 
 
 # URL http://localhost:5000/session_count
