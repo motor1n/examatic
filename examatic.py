@@ -6,19 +6,20 @@ developed on flask
 
 import os
 import datetime as dt
-from flask import Flask, render_template, make_response, session, jsonify, request
+from flask import Flask, render_template, make_response, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 # from sqlalchemy import exc
 # from sqlalchemy import or_
-from werkzeug.exceptions import abort
+# from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 from data import db_session
-from data.question import Question, QuestionForm
+from data.question import Question
+from data.resources import QueRes, QueLiRes
 from data.users import User
 from data.register import RegisterForm
 from data.login import LoginForm
 from data.ticket import Ticket
-from data import api
+from flask_restful import Api
 
 
 DATABASE = 'dbase/examen.db'
@@ -46,6 +47,7 @@ current_ticket = list()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = dt.timedelta(days=365)
+api = Api(app)
 
 # Инициализация менеджера логинов:
 login_manager = LoginManager()
@@ -227,84 +229,6 @@ def issued():
     return render_template('issued.html', tickets=db_tickets)
 
 
-# URL http://localhost:5000/question
-@app.route('/question',  methods=['GET', 'POST'])
-@login_required
-def add_question():
-    """Добавление вопроса"""
-    question_form = QuestionForm()
-    if question_form.validate_on_submit():
-        db = db_session.create_session()
-        question = Question()
-        question.number = question_form.number.data
-        question.content = question_form.content.data
-        question.is_published = not question_form.is_published.data
-        current_user.question.append(question)
-        db.merge(current_user)
-        db.commit()
-        return redirect('/')
-    return render_template(
-        'question.html',
-        title='Добавление вопроса',
-        form=question_form
-    )
-
-
-@app.route('/question/<int:question_id>', methods=['GET', 'POST'])
-@login_required
-def edit_question(question_id):
-    """Редактирование вопроса"""
-    question_form = QuestionForm()
-    if request.method == 'GET':
-        db = db_session.create_session()
-        question = db.query(Question).filter(
-            Question.id == question_id,
-            Question.user == current_user
-        ).first()
-        if question:
-            question_form.number.data = question.number
-            question_form.content.data = question.content
-            question_form.is_published.data = question.is_published
-        else:
-            abort(404)
-    if question_form.validate_on_submit():
-        db = db_session.create_session()
-        question = db.query(Question).filter(
-            Question.id == question_id,
-            Question.user == current_user
-        ).first()
-        if question:
-            question.number = question_form.number.data
-            question.content = question_form.content.data
-            question.is_published = question_form.is_published.data
-            db.commit()
-            return redirect('/')
-        else:
-            abort(404)
-    return render_template(
-        'question.html',
-        title='Редактирование вопроса',
-        form=question_form
-    )
-
-
-@app.route('/question_delete/<int:question_id>', methods=['GET', 'POST'])
-@login_required
-def question_delete(question_id):
-    """Удаление вопроса"""
-    db = db_session.create_session()
-    question = db.query(Question).filter(
-        Question.id == question_id,
-        Question.user == current_user
-    ).first()
-    if question:
-        db.delete(question)
-        db.commit()
-    else:
-        abort(404)
-    return redirect('/')
-
-
 # URL http://localhost:5000/session_count
 @app.route('/session_count')
 def session_count():
@@ -376,8 +300,11 @@ def path_picture(number_practic):
 
 if __name__ == '__main__':
     db_session.global_init(DATABASE)
-    # Регистрация схемы Blueprint
-    app.register_blueprint(api.blueprint)
+
+    # Добавляем классы из resources.py в настройки API:
+    api.add_resource(QueLiRes, '/api/question')
+    api.add_resource(QueRes, '/api/question/<int:question_id>')
+
     # Создаём экземпляр объекта "Билет":
     ticket = Ticket()
     app.run(host='localhost', debug=True)
