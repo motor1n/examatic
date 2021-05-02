@@ -1,5 +1,5 @@
 """
-examatic 0.2.0
+examatic 0.2.1
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -18,7 +18,7 @@ from data.users import User
 from data.register import RegisterForm
 from data.login import LoginForm
 from data.ticket import Ticket
-from data import question_api
+from data import api
 
 
 DATABASE = 'dbase/examen.db'
@@ -377,7 +377,7 @@ def path_picture(number_practic):
 if __name__ == '__main__':
     db_session.global_init(DATABASE)
     # Регистрация схемы Blueprint
-    app.register_blueprint(question_api.blueprint)
+    app.register_blueprint(api.blueprint)
     # Создаём экземпляр объекта "Билет":
     ticket = Ticket()
     app.run(host='localhost', debug=True)

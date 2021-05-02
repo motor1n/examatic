@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 from .question import Question
 
 
-blueprint = Blueprint('question_api', __name__, template_folder='templates')
+blueprint = Blueprint('api', __name__, template_folder='templates')
 
 
 # URl http://localhost:5000/api/question
@@ -46,7 +46,7 @@ def create_question():
     if not request.json:
         return jsonify({'error': 'Empty request'})
     elif not all(key in request.json for key in
-                 ['title', 'content', 'is_published', 'user_id']):
+                 ['number', 'content', 'is_published', 'user_id']):
         return jsonify({'error': 'Bad request'})
     # Создаём сессию:
     db = create_session()
@@ -65,7 +65,7 @@ def create_question():
     question.title
     """
     question = Question(
-        title=request.json['title'],
+        number=request.json['number'],
         content=request.json['content'],
         is_published=request.json['is_published'],
         user_id=request.json['user_id']
@@ -73,6 +73,12 @@ def create_question():
     db.add(question)
     db.commit()
     return jsonify({'success': 'OK'})
+
+
+@blueprint.route('/api/question/<int:question_id>', methods=['PUT'])
+def edit_question(question_id):
+    """Редактирование вопроса с id == question_id"""
+    pass
 
 
 @blueprint.route('/api/question/<int:question_id>', methods=['DELETE'])
