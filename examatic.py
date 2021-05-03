@@ -1,5 +1,5 @@
 """
-examatic 0.2.1
+examatic 0.3.1
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -8,9 +8,6 @@ import os
 import datetime as dt
 from flask import Flask, render_template, make_response, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-# from sqlalchemy import exc
-# from sqlalchemy import or_
-# from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 from data import db_session
 from data.question import Question
@@ -67,7 +64,7 @@ def index():
     """Корневая страница"""
     db = db_session.create_session()
     # Фильтруем вопросы - оставляем готовые:
-    db_questions = db.query(Question).filter(Question.is_published == 1)
+    db_questions = db.query(Question).filter(Question.is_published == 1).order_by(Question.number)
     # Рендерим готовые вопросы на шаблон страницы:
     return render_template('index.html', questions=db_questions)
 
@@ -77,25 +74,30 @@ def index():
 def register():
     """Страница регистрации"""
     regform = RegisterForm()
+
     if regform.validate_on_submit():
         # Модальное окно на ошибку "Введённые пароли не совпадают":
         if regform.password.data != regform.password_again.data:
             return redirect('/register#iw-modal-01')
         db = db_session.create_session()
+
         # Модальное окно на ошибку "Такой пользователь уже есть":
         if db.query(User).filter(User.email == regform.email.data).first():
             return redirect('/register#iw-modal-02')
+
         # Считываем данные пользователя из формы:
         user = User()
+        user.surname = regform.surname.data
         user.name = regform.name.data
-        user.surname = regform.surname.data,
-        user.middlename = regform.middlename.data,
+        user.middlename = regform.middlename.data
         user.email = regform.email.data
         user.set_password(regform.password.data)
+
         # Добавляем юзера в БД:
         db.add(user)
         db.commit()
         return redirect('/login')
+
     return render_template('register.html', title='Регистрация', form=regform)
 
 
@@ -104,6 +106,7 @@ def register():
 def login():
     """Авторизация"""
     login_form = LoginForm()
+
     if login_form.validate_on_submit():
         db = db_session.create_session()
         user = db.query(User).filter(User.email == login_form.email.data).first()
@@ -223,8 +226,6 @@ def issued():
     """Список выданных билетов"""
     db = db_session.create_session()
     db_tickets = db.query(Ticket)
-    # db_users = db.query(User)
-    # db_tickets = db.query(Ticket).join(User, Ticket.user_id == User.name)
     # Рендерим билеты на шаблон страницы:
     return render_template('issued.html', tickets=db_tickets)
 
@@ -298,8 +299,19 @@ def path_picture(number_practic):
     return f'../static/img/practic/{number_file}.png'
 
 
+def clear_table(table):
+    db = db_session.create_session()
+    db.query(table).delete()
+    db.commit()
+
+
 if __name__ == '__main__':
     db_session.global_init(DATABASE)
+
+    # Очищаем перед началом экзамена
+    # таблицы users и tickets:
+    clear_table(User)
+    clear_table(Ticket)
 
     # Добавляем классы из resources.py в настройки API:
     api.add_resource(QueLiRes, '/api/question')
@@ -307,4 +319,5 @@ if __name__ == '__main__':
 
     # Создаём экземпляр объекта "Билет":
     ticket = Ticket()
+
     app.run(host='localhost', debug=True)

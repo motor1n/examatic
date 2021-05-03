@@ -25,13 +25,30 @@
 </div>
 
 <script>
+	// Необходимо указать реальные "chat_id" Телеграм-канала и "token" Телеграм-бота:
+    var chat_id = "chat_id";
+    var token = "token";
+    var text = "<b>{{surname}} {{name}} {{middlename}}</b>\nВремя подготовки окончилось!\n\n<b>Билет</b>:\n1. {{ticket[0]}}\n2. {{ticket[1]}}";
+
+    // Функция отправки сообщения об окончании времени подготовки к экзамену:
+    function send_to_telegram(token,text,chat_id){
+      var z=$.ajax({
+      type: "POST",
+      url: "https://api.telegram.org/bot"+token+"/sendMessage?chat_id="+chat_id,
+      data: "parse_mode=HTML&text="+encodeURIComponent(text),
+      });
+     };
+
     var timerElem = document.querySelector('.timer'),
         // i - время в секундах
         i = {{time}},
         timerId = setInterval(function(){
             i--;
             timerElem.innerHTML = Math.floor(i / 60) + ':' + Math.floor(i % 60 / 10) + i % 60 % 10;
-            if (i < 1) clearInterval(timerId);
+            if (i < 1){
+                clearInterval(timerId);
+                send_to_telegram(token,text,chat_id);
+            }
         },
         1000);
 </script>
