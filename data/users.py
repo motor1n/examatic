@@ -1,4 +1,4 @@
-"""Модель для работы с SQL-таблицей users"""
+"""Модель для работы с пользователями"""
 
 import datetime
 import sqlalchemy

@@ -1,5 +1,5 @@
 """
-examatic 0.3.1
+examatic 0.5.3
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -19,6 +19,7 @@ from data.ticket import Ticket
 from flask_restful import Api
 
 
+# База данных:
 DATABASE = 'dbase/examen.db'
 
 # Время на подготовку к экзамену (минут):
@@ -29,6 +30,7 @@ QUESTIONS_IN_TICKET = 2
 
 # Путь к файлам практических заданий:
 PATH_PRACTICS = 'static/img/practic'
+
 # Количество практических заданий:
 number_practics = len(os.listdir(path=PATH_PRACTICS))
 
@@ -180,8 +182,6 @@ def ticket():
             # И создаём новый билет из нового набора:
             ticket.tickets[current_user_email] = create_ticket(QUESTIONS_IN_TICKET)
 
-        print(f'Студент: {current_user_email} ➤ вопрос(ы): {ticket.tickets[current_user_email]}\n')
-
         # Заполняем билет текстами вопросов по их номерам:
         current_ticket = [lst[q_num] for q_num in ticket.tickets[current_user_email]]
 
@@ -192,10 +192,7 @@ def ticket():
             practics = ticket.create_practics(number_practics)
             current_ticket.append(create_practic_number())
 
-        print('questions:', questions)
-        print('practics:', practics)
-        print('current_ticket:', current_ticket)
-
+        # Добавляем билет в базу данных:
         ticket_tmp = Ticket()
         ticket_tmp.user_id = current_user.id
         ticket_tmp.question1 = ticket.tickets[current_user_email][0] + 1
@@ -300,6 +297,7 @@ def path_picture(number_practic):
 
 
 def clear_table(table):
+    """Очистка таблицы БД"""
     db = db_session.create_session()
     db.query(table).delete()
     db.commit()
@@ -308,8 +306,8 @@ def clear_table(table):
 if __name__ == '__main__':
     db_session.global_init(DATABASE)
 
-    # Очищаем перед началом экзамена
-    # таблицы users и tickets:
+    # Очищаем перед началом нового экзамена
+    # таблицу users (пользователи) и tickets (экзаменационные билеты):
     clear_table(User)
     clear_table(Ticket)
 
@@ -320,4 +318,5 @@ if __name__ == '__main__':
     # Создаём экземпляр объекта "Билет":
     ticket = Ticket()
 
+    # Запускаем web-приложение:
     app.run(host='localhost', debug=True)

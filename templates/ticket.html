@@ -25,17 +25,25 @@
 </div>
 
 <script>
-	// Необходимо указать реальные "chat_id" Телеграм-канала и "token" Телеграм-бота:
-    var chat_id = "chat_id";
-    var token = "token";
+    /*
+    Внимание: chat_id и token - не рабочие!
+    Они указаны, как шаблон оформления кода.
+    Необходимо заменить их на рабочие.
+    chat_id - это id Telegram-канала
+    token - это токен Telegram-бота
+    */
+    var chat_id = "-1018474137298";
+    var token = "1835402325:AFKGiMbK3GSFuyJnfvAXZEv0tQkoNZUr4pZ";
+
+    // Формирование сообщения:
     var text = "<b>{{surname}} {{name}} {{middlename}}</b>\nВремя подготовки окончилось!\n\n<b>Билет</b>:\n1. {{ticket[0]}}\n2. {{ticket[1]}}";
 
-    // Функция отправки сообщения об окончании времени подготовки к экзамену:
-    function send_to_telegram(token,text,chat_id){
+    // Функция отправки в Телеграм-канал сообщения об окончании времени подготовки к экзамену:
+    function send_to_telegram(token, text, chat_id){
       var z=$.ajax({
       type: "POST",
-      url: "https://api.telegram.org/bot"+token+"/sendMessage?chat_id="+chat_id,
-      data: "parse_mode=HTML&text="+encodeURIComponent(text),
+      url: "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id,
+      data: "parse_mode=HTML&text=" + encodeURIComponent(text),
       });
      };
 
@@ -47,7 +55,8 @@
             timerElem.innerHTML = Math.floor(i / 60) + ':' + Math.floor(i % 60 / 10) + i % 60 % 10;
             if (i < 1){
                 clearInterval(timerId);
-                send_to_telegram(token,text,chat_id);
+                // Вызов функции отправки сообщения в Telegram-канал:
+                send_to_telegram(token, text, chat_id);
             }
         },
         1000);
@@ -59,7 +68,7 @@
         <h2 class="col-12 text-center tm-section-title">{{surname}} {{name}} {{middlename}}</h2>
         <p class="col-12 text-center">
             Экзаменационный билет состоит из двух вопросов и практического задания.
-            Время на подготовку: {{source_time}}  минут. Приступайте!
+            Время на подготовку (минут): {{source_time}}. Приступайте!
         </p>
     </header>
 
