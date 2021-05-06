@@ -1,5 +1,5 @@
 """
-examatic 0.5.3
+examatic 0.7.0
 Exam-a-Ticket Generator
 developed on flask
 """
