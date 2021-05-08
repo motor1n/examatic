@@ -1,13 +1,25 @@
 """
-examatic 0.8.0
+examatic 0.9.0
 Exam-a-Ticket Generator
 developed on flask
 """
 
 import os
 import datetime as dt
-from flask import Flask, render_template, make_response, session, jsonify
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask import (
+    Flask,
+    render_template,
+    make_response,
+    session,
+    jsonify
+)
+from flask_login import (
+    LoginManager,
+    login_user,
+    logout_user,
+    login_required,
+    current_user
+)
 from werkzeug.utils import redirect
 from data import db_session
 from data.question import Question

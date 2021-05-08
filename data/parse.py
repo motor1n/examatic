@@ -1,4 +1,4 @@
-"""RESTfull API: парсинг запроса"""
+"""RESTfull API: парсинг запроса по экзаменацилонному вопросу"""
 
 from flask_restful import reqparse
 

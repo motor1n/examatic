@@ -1,4 +1,4 @@
-"""RESTfull API: ресурс для работы с экзаменационными вопросами"""
+"""examatic RESTfull API: ресурс для работы с экзаменационными вопросами"""
 
 from flask import jsonify
 from flask_restful import abort, Resource

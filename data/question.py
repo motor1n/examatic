@@ -6,7 +6,6 @@ from sqlalchemy import orm
 from flask_wtf import FlaskForm
 from sqlalchemy_serializer import SerializerMixin
 from wtforms import StringField, TextAreaField, BooleanField, SubmitField
-# from wtforms.validators import DataRequired
 from .db_session import SqlAlchemyBase
 
 
