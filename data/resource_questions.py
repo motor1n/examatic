@@ -27,7 +27,7 @@ class QueRes(Resource):
                         'number',
                         'content',
                         'is_published',
-                        'user_id'
+                        'user.email'
                     )
                 )
             }
@@ -35,6 +35,7 @@ class QueRes(Resource):
 
     @staticmethod
     def delete(question_id):
+        """Уделение экзаменационного вопроса по его id"""
         not_found(question_id)
         db = db_session.create_session()
         question = db.query(Question).get(question_id)
@@ -51,7 +52,13 @@ class QueLiRes(Resource):
         return jsonify(
             {
                 'question': [item.to_dict(
-                    only=('number', 'content', 'user.name')) for item in question]
+                    only=(
+                        'number',
+                        'content',
+                        'is_published',
+                        'user.email'
+                    )
+                ) for item in question]
             }
         )
 

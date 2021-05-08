@@ -1,5 +1,5 @@
 """
-examatic 0.7.0
+examatic 0.8.0
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -11,7 +11,8 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.utils import redirect
 from data import db_session
 from data.question import Question
-from data.resources import QueRes, QueLiRes
+from data.resource_tickets import IssuedTickets
+from data.resource_questions import QueRes, QueLiRes
 from data.users import User
 from data.register import RegisterForm
 from data.login import LoginForm
@@ -308,10 +309,12 @@ if __name__ == '__main__':
 
     # Очищаем перед началом нового экзамена
     # таблицу users (пользователи) и tickets (экзаменационные билеты):
-    clear_table(User)
-    clear_table(Ticket)
+    # clear_table(User)
+    # clear_table(Ticket)
+    # Если очистка не требуется - закомментировать.
 
     # Добавляем классы из resources.py в настройки API:
+    api.add_resource(IssuedTickets, '/api/issued')
     api.add_resource(QueLiRes, '/api/question')
     api.add_resource(QueRes, '/api/question/<int:question_id>')
 
