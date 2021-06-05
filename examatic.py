@@ -333,5 +333,9 @@ if __name__ == '__main__':
     # Создаём экземпляр объекта "Билет":
     ticket = Ticket()
 
-    # Запускаем web-приложение:
-    app.run(host='localhost', debug=True)
+    # Запускаем web-приложение локально:
+    # app.run(host='localhost', debug=True)
+
+    # Запускаем web-приложение на Heroku:
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
