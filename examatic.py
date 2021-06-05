@@ -321,8 +321,8 @@ if __name__ == '__main__':
 
     # Очищаем перед началом нового экзамена
     # таблицу users (пользователи) и tickets (экзаменационные билеты):
-    # clear_table(User)
-    # clear_table(Ticket)
+    clear_table(User)
+    clear_table(Ticket)
     # Если очистка не требуется - закомментировать.
 
     # Добавляем классы из resources.py в настройки API:
