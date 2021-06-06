@@ -31,9 +31,15 @@
     Необходимо заменить их на рабочие.
     chat_id - это id Telegram-канала
     token - это токен Telegram-бота
-    */
+
+    Например:
     var chat_id = "-1018474137298";
     var token = "1835402325:AFKGiMbK3GSFuyJnfvAXZEv0tQkoNZUr4pZ";
+    */
+
+    // Приём данных (id Telegram-канала и токен) из переменных среды Python-программы:
+    var chat_id = "{{telegram_chat_id}}";
+    var token = "{{telegram_token}}";
 
     // Формирование сообщения:
     var text = "<b>{{surname}} {{name}} {{middlename}}</b>\nВремя подготовки окончилось!\n\n<b>Билет</b>:\n1. {{ticket[0]}}\n2. {{ticket[1]}}";

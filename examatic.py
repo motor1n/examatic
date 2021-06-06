@@ -1,5 +1,5 @@
 """
-examatic 1.0.0
+examatic 1.1.0
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -30,13 +30,14 @@ from data.register import RegisterForm
 from data.login import LoginForm
 from data.ticket import Ticket
 from flask_restful import Api
+from decouple import config
 
 
 # База данных:
 DATABASE = 'dbase/examen.db'
 
 # Время на подготовку к экзамену (минут):
-TIME = 50
+TIME = 1
 
 # Количество вопросов в билете:
 QUESTIONS_IN_TICKET = 2
@@ -56,6 +57,11 @@ practics = list()
 # Готовый билет с вопросами (список строк) для текущего пользователя:
 current_ticket = list()
 
+# Чтение регистрационных данных Telegram-бота из переменных среды:
+TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID', default='')
+TELEGRAM_TOKEN = config('TELEGRAM_TOKEN', default='')
+
+# Создаём приложение Flask:
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = dt.timedelta(days=365)
@@ -121,7 +127,6 @@ def register():
 def login():
     """Авторизация"""
     login_form = LoginForm()
-
     if login_form.validate_on_submit():
         db = db_session.create_session()
         user = db.query(User).filter(User.email == login_form.email.data).first()
@@ -179,12 +184,14 @@ def ticket():
             name=current_user.name,
             surname=current_user.surname,
             middlename=current_user.middlename,
+            telegram_chat_id=TELEGRAM_CHAT_ID,
+            telegram_token=TELEGRAM_TOKEN,
             ticket=current_ticket,
             source_time=TIME,
             time=time_left.seconds
         )
     else:
-        # Иначе у пользователя ещё нет билета.
+        # Иначе у пользователя ещё нет билета:
         try:
             # Обработка исключения, когда формирование очередного билета
             # вызовет обращение к несуществующему элементу:
@@ -223,6 +230,8 @@ def ticket():
             name=current_user.name,
             surname=current_user.surname,
             middlename=current_user.middlename,
+            telegram_chat_id=TELEGRAM_CHAT_ID,
+            telegram_token=TELEGRAM_TOKEN,
             ticket=current_ticket,
             source_time=TIME,
             time=TIME*60
