@@ -1,5 +1,5 @@
 """
-examatic 1.1.0
+examatic 1.1.1
 Exam-a-Ticket Generator
 developed on flask
 """
@@ -37,7 +37,7 @@ from decouple import config
 DATABASE = 'dbase/examen.db'
 
 # Время на подготовку к экзамену (минут):
-TIME = 1
+TIME = 50
 
 # Количество вопросов в билете:
 QUESTIONS_IN_TICKET = 2
